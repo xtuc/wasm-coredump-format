@@ -63,7 +63,7 @@ frame ::= funcidx:u32 codeoffset:u32 vec(local) vec(global) vec(stack) reserved:
 
 The `reserved` bytes are decoded as an empty vector.
 
-`vec` (same encoding has [Wasm Vectors]):
+`vec` (same encoding as [Wasm Vectors]):
 ```
 vec(B) ::= n:u32 cont:B
 ```
