@@ -58,7 +58,7 @@ coredump ::= framecount:u32 size:u32 cont:frame*
 > implementer note: since the `frame` struct doesn't have a fixed size, the `size` value can be used to append new frames because it's pointing at the end of the `coredump`.
 
 ```
-frame ::= funcidx:u32 codeoffset:u32 vec(local) vec(global) vec(stack) reserved:u32
+frame ::= funcidx:u32 codeoffset:u32 locals:vec(local) globals:vec(global) stack:vec(stack) reserved:u32
 ```
 
 The `reserved` bytes are decoded as an empty vector.
