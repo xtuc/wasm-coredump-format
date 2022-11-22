@@ -71,6 +71,7 @@ vec(B) ::= n:u32 cont:B
 ## Useful links
 
 - [ELF coredump]
+- [Wasmer FrameInfo]
 
 [Wasm Vectors]: https://webassembly.github.io/spec/core/binary/conventions.html#binary-vec
 [ELF coredump]: https://www.gabriel.urdhr.fr/2015/05/29/core-file/
@@ -80,3 +81,4 @@ vec(B) ::= n:u32 cont:B
 [wasm-edit]: https://github.com/xtuc/wasm-edit
 [wasmgdb]: https://github.com/xtuc/wasmgdb
 [DWARF]: https://yurydelendik.github.io/webassembly-dwarf
+[Wasmer FrameInfo]: https://docs.rs/wasmer/latest/wasmer/struct.FrameInfo.html
