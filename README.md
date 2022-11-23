@@ -58,7 +58,7 @@ coredump ::= framecount:u32 size:u32 cont:frame*
 > implementer note: since the `frame` struct doesn't have a fixed size, the `size` value can be used to append new frames because it's pointing at the end of the `coredump`.
 
 ```
-frame ::= funcidx:u32 codeoffset:u32 locals:vec(local) globals:vec(global) stack:vec(stack) reserved:u32
+frame ::= codeoffset:u32 locals:vec(local) globals:vec(global) stack:vec(stack) reserved:u32
 ```
 
 The `reserved` bytes are decoded as an empty vector.
@@ -67,6 +67,8 @@ The `reserved` bytes are decoded as an empty vector.
 ```
 vec(B) ::= n:u32 cont:B
 ```
+
+`u32` are encoding using LEB128, like [Wasm u32].
 
 ## Useful links
 
@@ -82,3 +84,4 @@ vec(B) ::= n:u32 cont:B
 [wasmgdb]: https://github.com/xtuc/wasmgdb
 [DWARF]: https://yurydelendik.github.io/webassembly-dwarf
 [Wasmer FrameInfo]: https://docs.rs/wasmer/latest/wasmer/struct.FrameInfo.html
+[Wasm u32]: https://webassembly.github.io/spec/core/binary/values.html#binary-int
