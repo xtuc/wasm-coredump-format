@@ -30,6 +30,8 @@ try {
 }
 ```
 
+However, production implementation require runtime-level support.
+
 ### Security and privacy considerations
 
 Using the WebAssembly linear memory for debugging exposes the risk of seeing, manipulating and/or collecting sensitive informations.
