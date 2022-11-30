@@ -10,48 +10,55 @@ The motivations are the same than usual post-mortem debugging. The main target e
 
 ## Idea
 
-When WebAssembly enters a trap, it starts unwinding and collects debugging information. For each stack frame the state of the WebAssembly instance can be captured by collecting the values in locals (includes function parameters), globals and on the stack, along with an offset in the code section. Values are written into the `coredump` struct.
+When WebAssembly enters a trap, it starts unwinding and collects debugging information. For each stack frame, the state of the WebAssembly instance can be captured by collecting the values:
+- in locals (includes function parameters)
+- in globals
+- on the stack 
 
-The post mortem analyze is done using the `coredump` struct, the WebAssembly linear memory (also called process image) and [DWARF] informations. Similar to the debugging flow with [gdb].
+Along with an instruction binary offset (relative to the code section, as specified by [DWARF]). All the information are written to a coredump file.
+
+The post mortem analyze is done using the coredump file and [DWARF] informations. Similar to the debugging flow with [gdb].
 
 ### Runtime support
 
-For experimenting, runtime support is not strictly necessary. Tools can rewrite the Wasm binary to inject code that will unwinding the stack, collect debugging information and write the `coredump` struct, for instance [wasm-edit coredump]. Such a transformation has important limitations. For simplicty, [wasm-edit] places the `coredump` at offset 0 of the linear memory, however the proper placement hasn't been specified yet.
+Most of the WebAssembly runtimes are already able to present a useful stacktrace on crash to the user. When they are configured to emit a coredump, they collect the debugging information and write a coredump file.
 
-Example to demonstrate how to the coredump generation works with [wasm-edit]:
-```js
-const { instance } = await WebAssembly.instantiateStreaming(...);
-
-try {
-    instance.exports.main();
-} catch (err) {
-    const image = instance.memory();
-    someStorage.put("coredump.1234", image);
-}
+An example output:
 ```
+$ wasmrun module.wasm
 
-However, production implementation require runtime-level support.
+Exit 1: Uncaught RuntimeError: memory access out of bounds (core dumped).
+``` 
+A coredump file has been generated.
+
+For experimenting, runtime support is not strictly necessary. A tools can transform the Wasm binary to inject code that will manually unwind the stack and collect debugging information, for instance [wasm-edit coredump]. Such a transformation has important limitations; a trap caused by an invalid memory operation or exception in a host function might not be caught.
 
 ### Security and privacy considerations
 
-Using the WebAssembly linear memory for debugging exposes the risk of seeing, manipulating and/or collecting sensitive informations.
-Handling of sensitive data is out of scope.
+Using the WebAssembly linear memory for debugging exposes the risk of seeing, manipulating and/or collecting sensitive informations. Handling of sensitive data is out of scope.
 
 No particular security considerations.
 
 ### Debugger support
 
-[gdb] doesn't support Wasm coredump and it's unclear if it can.
-Wasm coredump differ from ELF coredump in a few significant ways:
+[gdb] doesn't support Wasm coredump and it's unclear if it can. Wasm coredump differ from ELF coredump in a few significant ways:
 - Wasm semantics; usage of locals, globals and the stack.
-- The process image is only the Wasm linear memory
+- The process image is only the Wasm linear memory.
 - etc.
 
 For experimenting, a custom tool has been built and mimics [gdb]: [wasmgdb].
 
-## Format
+## Coredump file format
 
-The coredump blob starts with the numbers of frame recorded and the combined size of all frames, then the frames themself.
+The generated coredump is a binary file containing: 
+- a snapshot of the WebAssembly linear memory or relevant regions.
+- the `coredump` struct.
+
+The placement of the `coredump` struct within the coredump file is not defined yet. However, for the sake of argument we assume it's at offset 0.
+
+## `coredump` struct
+
+The coredump struct starts with the numbers of frame recorded and the combined size of all frames, followed by the frames themself.
 
 ```
 coredump ::= framecount:u32 size:u32 cont:frame*
@@ -63,7 +70,7 @@ coredump ::= framecount:u32 size:u32 cont:frame*
 frame ::= codeoffset:u32 locals:vec(local) globals:vec(global) stack:vec(stack) reserved:u32
 ```
 
-The `reserved` bytes are decoded as an empty vector.
+The `reserved` bytes are decoded as an empty vector and reserved for future use.
 
 `vec` (same encoding as [Wasm Vectors]):
 ```
@@ -71,6 +78,7 @@ vec(B) ::= n:u32 cont:B
 ```
 
 `u32` are encoding using LEB128, like [Wasm u32].
+
 
 ## Useful links
 
