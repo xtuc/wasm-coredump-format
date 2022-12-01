@@ -79,6 +79,9 @@ vec(B) ::= n:u32 cont:B
 
 `u32` are encoding using LEB128, like [Wasm u32].
 
+## Demo
+
+Please have a look at the demonstration using the experimental support & tooling: [demo].
 
 ## Useful links
 
@@ -95,3 +98,4 @@ vec(B) ::= n:u32 cont:B
 [DWARF]: https://yurydelendik.github.io/webassembly-dwarf
 [Wasmer FrameInfo]: https://docs.rs/wasmer/latest/wasmer/struct.FrameInfo.html
 [Wasm u32]: https://webassembly.github.io/spec/core/binary/values.html#binary-int
+[demo]: https://github.com/xtuc/wasmgdb/wiki/Demo
