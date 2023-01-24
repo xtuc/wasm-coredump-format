@@ -1,1 +1,1 @@
-https://github.com/WebAssembly/tool-conventions/blob/main/Coredump.md
+Moved to https://github.com/WebAssembly/tool-conventions/blob/main/Coredump.md.
